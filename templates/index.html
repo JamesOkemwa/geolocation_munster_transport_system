@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Münster Public Transport App</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <style>
         #map {
             height: 100vh;
@@ -16,6 +18,7 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script>
         var mymap = L.map('map').setView([51.96, 7.62], 13);
 
@@ -23,13 +26,25 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(mymap);
 
-        var stopsGeoJSON = {{stops_geojson|tojson|safe}}
+        var stopsGeoJSON = {{stops_geojson|tojson|safe}};
+
+        // Create a MarkerClusterGroup
+        var markers = L.markerClusterGroup();
 
         // Add GTFS bus stops to the map
-        var stopsLayer = L.geoJSON(JSON.parse(stopsGeoJSON)).addTo(mymap);
+        var stopsLayer = L.geoJSON(JSON.parse(stopsGeoJSON), {
+            onEachFeature: function (feature, layer) {
+                var popupContent = "Name: " + feature.properties.stop_name;
+                layer.bindPopup(popupContent);
+            }
+        });
 
-        // Fit the map to the bounds of the stops layer
-        mymap.fitBounds(stopsLayer.getBounds());
+        markers.addLayer(stopsLayer);
+
+        mymap.addLayer(markers);
+
+        // Fit the map to the bounds of the MarkerClusterGroup
+        mymap.fitBounds(markers.getBounds());
 
         
     </script>
