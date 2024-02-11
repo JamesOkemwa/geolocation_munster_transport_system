@@ -7,6 +7,6 @@ def read_gtfs_data():
     """
     gtfs_file_path = 'data/gtfs/stadtwerke_feed/stops.txt'
     bus_stops_df = pd.read_csv(gtfs_file_path)
-    gdf_stops = gpd.GeoDataFrame(bus_stops_df, geometry=gpd.points_from_xy(bus_stops_df['stop_lon'], bus_stops_df['stop_lat']))
+    gdf_stops = gpd.GeoDataFrame(bus_stops_df, geometry=gpd.points_from_xy(bus_stops_df['stop_lon'], bus_stops_df['stop_lat']), crs="EPSG:4326")
 
     return gdf_stops

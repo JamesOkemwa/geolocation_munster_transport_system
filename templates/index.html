@@ -22,6 +22,16 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(mymap);
+
+        var stopsGeoJSON = {{stops_geojson|tojson|safe}}
+
+        // Add GTFS bus stops to the map
+        var stopsLayer = L.geoJSON(JSON.parse(stopsGeoJSON)).addTo(mymap);
+
+        // Fit the map to the bounds of the stops layer
+        mymap.fitBounds(stopsLayer.getBounds());
+
+        
     </script>
 </body>
 </html>
