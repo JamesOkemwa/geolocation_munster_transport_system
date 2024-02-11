@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_version,feed_start_date,feed_end_date
+Stadtwerke Münster,http://www.stadtwerke-muenster.de,de,1.0,20240205,20240602
