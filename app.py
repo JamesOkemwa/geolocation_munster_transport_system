@@ -36,6 +36,32 @@ def process_user_position():
         })
     else:
         return jsonify({ 'error': 'Invalid user position'})
+    
+@app.route('/process_destination_coordinates', methods=['POST'])
+def process_destination_coordinates():
+    """
+    Receives the coordinates of the searched destination, and returns the details of the nearest bus stop
+    """
+    destination_position = request.get_json()
+    destination_lat = destination_position.get("latitude")
+    destination_long = destination_position.get("longitude")
+
+    if destination_lat is not None and destination_long is not None:
+        nearest_bus_stop = find_nearest_bus_stop(destination_lat, destination_long)
+        print(nearest_bus_stop)
+
+        return jsonify({
+            'message': 'User position received and processed successfully',
+            'nearest_bus_stop': {
+                'stop_id': nearest_bus_stop['stop_id'],
+                'stop_name': nearest_bus_stop['stop_name'],
+                'latitude': nearest_bus_stop['stop_lat'],
+                'longitude': nearest_bus_stop['stop_lon'],
+                'distance': nearest_bus_stop['distance']
+            }
+        })
+    else:
+        return jsonify({ 'error': 'Invalid destination coordinates'})
 
 
 if __name__ == '__main__':

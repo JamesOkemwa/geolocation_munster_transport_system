@@ -92,11 +92,11 @@
                 body: JSON.stringify(userPosition)
             })
             .then(response => response.json())
-            .then(data => displayNearestBusStop(data))
+            .then(data => displayNearestBusStopFromUser(data))
             .catch(error => console.error('Error:', error));
         }
 
-        function displayNearestBusStop(bus_stop) {
+        function displayNearestBusStopFromUser(bus_stop) {
             // remove marker of nearest bus stop if it exists
             if (nearestBusStop) {
                 mymap.removeLayer(nearestBusStop)
@@ -109,10 +109,43 @@
 
         getUserLocation()
 
-        // Add a geocoding search bar
-        L.Control.geocoder({
+        // Add the geocoder control
+        var geocoderControl = L.Control.geocoder({
             geocoder: L.Control.Geocoder.nominatim()
         }).addTo(mymap);
+
+        geocoderControl.on('markgeocode', function(event) {
+            var geocode = event.geocode;
+            var searchQuery = geocode.name;
+            var coordinates = geocode.center;
+            var destinationCoords = {
+                'latitude': coordinates.lat,
+                'longitude': coordinates.lng
+            }
+
+            fetch('/process_destination_coordinates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(destinationCoords)
+            })
+            .then(response => response.json())
+            .then(data => displayNearestBusStopFromDestination(data))
+            .catch(error => console.error('Error:', error));
+        })
+
+        let destinationNearestBusStop
+        function displayNearestBusStopFromDestination(bus_stop) {
+            // remove marker of nearest bus stop from destination if it exists
+            if (destinationNearestBusStop) {
+                mymap.removeLayer(destinationNearestBusStop)
+            }
+
+            destinationNearestBusStop = L.marker([bus_stop.nearest_bus_stop.latitude, bus_stop.nearest_bus_stop.longitude]).addTo(mymap)
+            var popupContent = "Nearest Bus Stop: " + bus_stop.nearest_bus_stop.stop_name + "<br>Distance: " + bus_stop.nearest_bus_stop.distance.toFixed(0) + " m away"
+            destinationNearestBusStop.bindPopup(popupContent).openPopup()
+        }
 
     </script>
 </body>
