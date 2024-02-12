@@ -14,7 +14,7 @@ def read_gtfs_data():
 
 def find_nearest_bus_stop(user_lat, user_long):
     """
-    Takes the coordinates of the user position and returns the details of the nearest bus stop
+    Takes the coordinates of the user position or user destination and returns the details of the nearest bus stop
     """
     bus_stops_gdf = read_gtfs_data()
 
