@@ -48,7 +48,8 @@
         mymap.fitBounds(markers.getBounds());
 
         // Get the user location and display it on a map
-        var userMarker 
+        var userMarker
+        var nearestBusStop
         function getUserLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -89,8 +90,19 @@
                 body: JSON.stringify(userPosition)
             })
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data => displayNearestBusStop(data))
             .catch(error => console.error('Error:', error));
+        }
+
+        function displayNearestBusStop(bus_stop) {
+            // remove marker of nearest bus stop if it exists
+            if (nearestBusStop) {
+                mymap.removeLayer(nearestBusStop)
+            }
+
+            nearestBusStop = L.marker([bus_stop.nearest_bus_stop.latitude, bus_stop.nearest_bus_stop.longitude]).addTo(mymap)
+            var popupContent = "Nearest Bus Stop: " + bus_stop.nearest_bus_stop.stop_name + "<br>Distance: " + bus_stop.nearest_bus_stop.distance.toFixed(0) + " m away"
+            nearestBusStop.bindPopup(popupContent).openPopup()
         }
 
         getUserLocation()

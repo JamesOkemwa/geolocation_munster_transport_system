@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import json
-from utility.helpers import read_gtfs_data
+from utility.helpers import read_gtfs_data, find_nearest_bus_stop
 
 app = Flask(__name__)
 
@@ -14,9 +14,29 @@ def index():
 
 @app.route('/process_user_position', methods=['POST'])
 def process_user_position():
+    """
+    Receives the coordinates of the user position from the map and returns the details of the nearest bus stop
+    """
     user_position = request.get_json()
+    user_lat = user_position.get("latitude")
+    user_long = user_position.get("longitude")
 
-    return jsonify({'message': 'User position received and processed successfully'})
+    if user_lat is not None and user_long is not None:
+        nearest_bus_stop = find_nearest_bus_stop(user_lat, user_long)
+
+        return jsonify({
+            'message': 'User position received and processed successfully',
+            'nearest_bus_stop': {
+                'stop_id': nearest_bus_stop['stop_id'],
+                'stop_name': nearest_bus_stop['stop_name'],
+                'latitude': nearest_bus_stop['stop_lat'],
+                'longitude': nearest_bus_stop['stop_lon'],
+                'distance': nearest_bus_stop['distance']
+            }
+        })
+    else:
+        return jsonify({ 'error': 'Invalid user position'})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
