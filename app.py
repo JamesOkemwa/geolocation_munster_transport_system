@@ -8,6 +8,25 @@ app = Flask(__name__)
 stops_gdf = read_gtfs_data()
 stops_geojson = stops_gdf.to_json()
 
+def process_coordinates(latitude, longitude):
+    """
+    Receives coordinates of the user position or destination and returns json response of details of the nearest bus stop
+    """
+    if latitude is not None and longitude is not None:
+        nearest_bus_stop = find_nearest_bus_stop(latitude, longitude)
+        return jsonify({
+            'message': 'Coordinates received and processed successfully',
+            'nearest_bus_stop': {
+                'stop_id': nearest_bus_stop['stop_id'],
+                'stop_name': nearest_bus_stop['stop_name'],
+                'latitude': nearest_bus_stop['stop_lat'],
+                'longitude': nearest_bus_stop['stop_lon'],
+                'distance': nearest_bus_stop['distance']
+            }
+        })
+    else:
+        return jsonify({'error': 'Invalid coordinates'})
+
 @app.route('/')
 def index():
     return render_template('index.html', stops_geojson=stops_geojson)
@@ -15,53 +34,18 @@ def index():
 @app.route('/process_user_position', methods=['POST'])
 def process_user_position():
     """
-    Receives the coordinates of the user position from the map and returns the details of the nearest bus stop
+    Receives the coordinates of the user position from the map and returns the details of the nearest bus stop to the html template
     """
     user_position = request.get_json()
-    user_lat = user_position.get("latitude")
-    user_long = user_position.get("longitude")
-
-    if user_lat is not None and user_long is not None:
-        nearest_bus_stop = find_nearest_bus_stop(user_lat, user_long)
-
-        return jsonify({
-            'message': 'User position received and processed successfully',
-            'nearest_bus_stop': {
-                'stop_id': nearest_bus_stop['stop_id'],
-                'stop_name': nearest_bus_stop['stop_name'],
-                'latitude': nearest_bus_stop['stop_lat'],
-                'longitude': nearest_bus_stop['stop_lon'],
-                'distance': nearest_bus_stop['distance']
-            }
-        })
-    else:
-        return jsonify({ 'error': 'Invalid user position'})
+    return process_coordinates(user_position.get("latitude"), user_position.get("longitude"))
     
 @app.route('/process_destination_coordinates', methods=['POST'])
 def process_destination_coordinates():
     """
-    Receives the coordinates of the searched destination, and returns the details of the nearest bus stop
+    Receives the coordinates of the searched destination from the map, and returns the details of the nearest bus stop to the html template
     """
     destination_position = request.get_json()
-    destination_lat = destination_position.get("latitude")
-    destination_long = destination_position.get("longitude")
-
-    if destination_lat is not None and destination_long is not None:
-        nearest_bus_stop = find_nearest_bus_stop(destination_lat, destination_long)
-        print(nearest_bus_stop)
-
-        return jsonify({
-            'message': 'User position received and processed successfully',
-            'nearest_bus_stop': {
-                'stop_id': nearest_bus_stop['stop_id'],
-                'stop_name': nearest_bus_stop['stop_name'],
-                'latitude': nearest_bus_stop['stop_lat'],
-                'longitude': nearest_bus_stop['stop_lon'],
-                'distance': nearest_bus_stop['distance']
-            }
-        })
-    else:
-        return jsonify({ 'error': 'Invalid destination coordinates'})
+    return process_coordinates(destination_position.get("latitude"), destination_position.get("longitude"))
 
 
 if __name__ == '__main__':
