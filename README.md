@@ -7,11 +7,16 @@ This project is a web application for exploring public transport information in 
 Before running the application, ensure you have the following installed:
 
 - [Python](https://www.python.org/) (version 3.x.x)
+- [Pip](https://pypi.org/project/pip/)
 - Any tool for creating a virtual environment.
 
 ### Installation and running the application
 - Create a directory on your computer and copy the zipped file.
 - Create a virtual environment and activate it.
+```
+python -m venv venv
+source venv/bin/activate
+```
 - Install the required dependencies using the command `pip install requirements.txt`
 - Run the application using the command `python app.py`
 - Open your browser to view the application `http://localhost:5000`
@@ -28,4 +33,4 @@ Before running the application, ensure you have the following installed:
 - Finds the nearest bus stop based on the user location.
 - Finds the details of the next bus at the identified nearest bus stop.
 - Finds and displays the route followed by the next bus.
-- Search for locations or addresses using the geocoding search bar, and find the nearest bus stop to the destination.
+- Search for locations or addresses using the geocoding search bar, and find the nearest bus stop to the searched address.
