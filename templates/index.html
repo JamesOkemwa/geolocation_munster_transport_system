@@ -103,7 +103,7 @@
             }
 
             nearestBusStop = L.marker([bus_stop.nearest_bus_stop.latitude, bus_stop.nearest_bus_stop.longitude]).addTo(mymap)
-            var popupContent = "Nearest Bus Stop: " + bus_stop.nearest_bus_stop.stop_name + "<br>Distance: " + bus_stop.nearest_bus_stop.distance.toFixed(0) + " m away"
+            var popupContent = "<b>Nearest Bus Stop</b><br>Name: " + bus_stop.nearest_bus_stop.stop_name + "<br>Distance: " + bus_stop.nearest_bus_stop.distance.toFixed(0) + " m away" + "<br><b>Next Bus</b><br>Time: " + bus_stop.next_bus_details.arrival_time + "<br>Stop HeadSign: " + bus_stop.next_bus_details.stop_headsign
             nearestBusStop.bindPopup(popupContent).openPopup()
         }
 

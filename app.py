@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import json
-from utility.helpers import bus_stops_data, find_nearest_bus_stop
+from utility.helpers import bus_stops_data, find_nearest_bus_stop, get_next_bus_details
 
 app = Flask(__name__)
 
@@ -14,6 +14,9 @@ def process_coordinates(latitude, longitude):
     """
     if latitude is not None and longitude is not None:
         nearest_bus_stop = find_nearest_bus_stop(latitude, longitude)
+
+        next_bus_details = get_next_bus_details(nearest_bus_stop.get('stop_id'))
+
         return jsonify({
             'message': 'Coordinates received and processed successfully',
             'nearest_bus_stop': {
@@ -22,6 +25,10 @@ def process_coordinates(latitude, longitude):
                 'latitude': nearest_bus_stop['stop_lat'],
                 'longitude': nearest_bus_stop['stop_lon'],
                 'distance': nearest_bus_stop['distance']
+            },
+            'next_bus_details': {
+                'arrival_time': next_bus_details['arrival_time'],
+                'stop_headsign': next_bus_details['stop_headsign']
             }
         })
     else:
