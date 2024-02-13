@@ -1,11 +1,11 @@
 from flask import Flask, render_template, jsonify, request
 import json
-from utility.helpers import read_gtfs_data, find_nearest_bus_stop
+from utility.helpers import bus_stops_data, find_nearest_bus_stop
 
 app = Flask(__name__)
 
 # convert the bus stops geodataframe to geojson
-stops_gdf = read_gtfs_data()
+stops_gdf = bus_stops_data()
 stops_geojson = stops_gdf.to_json()
 
 def process_coordinates(latitude, longitude):

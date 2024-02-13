@@ -2,7 +2,7 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
 
-def read_gtfs_data():
+def bus_stops_data():
     """
     Load bus stops data into a pandas dataframe, converts it into a geodataframe and returns the geodataframe
     """
@@ -12,11 +12,17 @@ def read_gtfs_data():
 
     return gdf_stops
 
+def bus_stop_times():
+    """
+    Combine bus stops data and stop times into one geodataframe and return the geodataframe
+    """
+    bus_stops_gdf = bus_stops_data()
+
 def find_nearest_bus_stop(user_lat, user_long):
     """
     Takes the coordinates of the user position or user destination and returns the details of the nearest bus stop
     """
-    bus_stops_gdf = read_gtfs_data()
+    bus_stops_gdf = bus_stops_data()
 
     # create a geodataframe with the user location
     user_point = Point(user_long, user_lat)
