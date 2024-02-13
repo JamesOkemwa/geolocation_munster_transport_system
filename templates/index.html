@@ -105,6 +105,37 @@
             nearestBusStop = L.marker([bus_stop.nearest_bus_stop.latitude, bus_stop.nearest_bus_stop.longitude]).addTo(mymap)
             var popupContent = "<b>Nearest Bus Stop</b><br>Name: " + bus_stop.nearest_bus_stop.stop_name + "<br>Distance: " + bus_stop.nearest_bus_stop.distance.toFixed(0) + " m away" + "<br><b>Next Bus</b><br>Time: " + bus_stop.next_bus_details.arrival_time + "<br>Bus Number: " + bus_stop.next_bus_details.route_id + "<br>" + bus_stop.next_bus_details.stop_headsign
             nearestBusStop.bindPopup(popupContent).openPopup()
+
+            // fetch and display the route line of the next bus
+            var routeID = {
+                "route_id": bus_stop.next_bus_details.route_id
+            }
+            fetch('/get_route_polyline', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(routeID)
+            })
+            .then(response => response.json())
+            .then(data => displayRoutePolyline(data))
+        }
+
+        // Display the route of the next bus
+        let routeLine
+        function displayRoutePolyline(data) {
+            if (routeLine) {
+                mymap.removeLayer(routeLine)
+            }
+
+            routeLine = L.geoJSON(data.route_line, {
+                style: {
+                    color: 'blue',
+                    weight: 3,
+                    opacity: 1
+                }
+            }).addTo(mymap)
+
         }
 
         getUserLocation()
