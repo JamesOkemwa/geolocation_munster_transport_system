@@ -13,20 +13,23 @@ def bus_stops_data():
 
     return gdf_stops
 
-def bus_stop_times():
+def bus_stop_trip_times():
     """
-    Combine bus stops data and stop times into one geodataframe and return the geodataframe
+    Merge bus stops data, trip data and stop times into one geodataframe and return the geodataframe
     """
-    gtfs_file_path = 'data/gtfs/stadtwerke_feed/stop_times.txt'
+    gtfs_file_path = 'data/gtfs/stadtwerke_feed/'
 
     bus_stops_gdf = bus_stops_data()
-    stop_times_df = pd.read_csv(gtfs_file_path)
+    stop_times_df = pd.read_csv(gtfs_file_path + 'stop_times.txt')
+    trips_df = pd.read_csv(gtfs_file_path + 'trips.txt')
 
-    # Convert 'stop_id' to a common data type for both DataFrames for easier merging
+    # Convert 'stop_id' and 'trip_id' to a common data type in the dataframes DataFrames for easier merging
     bus_stops_gdf['stop_id'] = bus_stops_gdf['stop_id'].astype(str)
     stop_times_df['stop_id'] = stop_times_df['stop_id'].astype(str)
+    trips_df['trip_id'] = trips_df['trip_id'].astype(str)
 
-    merged_df = pd.merge(bus_stops_gdf, stop_times_df, on='stop_id')
+    # Merge stops, stop_times, and trips data
+    merged_df = pd.merge(pd.merge(bus_stops_gdf, stop_times_df, on='stop_id'), trips_df, on='trip_id')
 
     return merged_df
 
@@ -65,8 +68,8 @@ def get_next_bus_details(stop_id):
     Returns a dictionary containing the stop time and stop headsign details of the next bus at a particular bus station
     """
     stop_id = str(stop_id)
-    bus_stop_times_gdf = bus_stop_times()
-    filtered_gdf = bus_stop_times_gdf[bus_stop_times_gdf['stop_id'] == stop_id]
+    bus_stop_trip_times_gdf = bus_stop_trip_times()
+    filtered_gdf = bus_stop_trip_times_gdf[bus_stop_trip_times_gdf['stop_id'] == stop_id]
 
     # Sort by 'arrival_time'
     sorted_gdf = filtered_gdf.sort_values(by='arrival_time')
@@ -83,6 +86,6 @@ def get_next_bus_details(stop_id):
     # get the next bus details
     next_bus_details = filtered_rows.iloc[0]
     next_bus_details['arrival_time'] = next_bus_details['arrival_time'].strftime('%H:%M:%S')
-    selected_columns = next_bus_details[['arrival_time', 'stop_headsign']]
+    selected_columns = next_bus_details[['arrival_time', 'stop_headsign', 'route_id']]
 
     return selected_columns.to_dict()

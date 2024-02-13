@@ -16,6 +16,7 @@ def process_coordinates(latitude, longitude):
         nearest_bus_stop = find_nearest_bus_stop(latitude, longitude)
 
         next_bus_details = get_next_bus_details(nearest_bus_stop.get('stop_id'))
+        print(next_bus_details)
 
         return jsonify({
             'message': 'Coordinates received and processed successfully',
@@ -28,7 +29,8 @@ def process_coordinates(latitude, longitude):
             },
             'next_bus_details': {
                 'arrival_time': next_bus_details['arrival_time'],
-                'stop_headsign': next_bus_details['stop_headsign']
+                'stop_headsign': next_bus_details['stop_headsign'],
+                'route_id': next_bus_details['route_id']
             }
         })
     else:
